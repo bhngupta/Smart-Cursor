@@ -1,1 +1,1 @@
-# Hand Recog
+# Hand Recognition
