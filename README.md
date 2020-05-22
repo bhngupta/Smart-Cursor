@@ -1,6 +1,6 @@
 # Smart-Cursor
 
-Python Script to use the mouse with your hand.
+Python Script to use the mouse with your hand✨ 
 
 ## Installation
 
