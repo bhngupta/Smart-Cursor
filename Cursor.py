@@ -27,6 +27,7 @@ while cap.isOpened():
     contours, hierarchy = cv2.findContours(thresh1.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
     max_area = -1
 
+    #Defining countours according to max area
     for i in range(len(contours)):
         cnt = contours[i]
         area = cv2.contourArea(cnt)
@@ -36,17 +37,17 @@ while cap.isOpened():
     
     cnt = contours[ci]
     x, y, w, h = cv2.boundingRect(cnt)
-    cv2.rectangle(crop_img, (x, y), (x + w, y + h), (0, 0, 255), 0)
     hull = cv2.convexHull(cnt)
     drawing = np.zeros(crop_img.shape, np.uint8)
     
+    cv2.rectangle(crop_img, (x, y), (x + w, y + h), (0, 0, 0), 0)
+    cv2.rectangle(drawing, (x, y), (x + w, y + h), (255, 255, 255), 0)
     cv2.drawContours(drawing, [cnt], 0, (0, 255, 0), 0)
     cv2.drawContours(drawing, [hull], 0, (0, 0, 255), 0)
     
     hull = cv2.convexHull(cnt, returnPoints=False)
     defects = cv2.convexityDefects(cnt, hull)
     count_defects = 0
-    cv2.drawContours(thresh1, contours, -1, (0, 255, 0), 3)
     used_defect = None
 
     for i in range(defects.shape[0]):
@@ -59,13 +60,13 @@ while cap.isOpened():
         b = math.sqrt((far[0] - start[0]) ** 2 + (far[1] - start[1]) ** 2)
         c = math.sqrt((end[0] - far[0]) ** 2 + (end[1] - far[1]) ** 2)
         
+        #Change the angle 60 accordingly
         angle = math.acos((b ** 2 + c ** 2 - a ** 2) / (2 * b * c)) * 60
         
         if angle <= 90:
             count_defects += 1
         
-        #Puts yellow circles in defects in input image
-        cv2.circle(crop_img, far, 5, [0, 220, 220], -1)
+        cv2.circle(crop_img, far, 5, [0, 0, 255], -1)
     
         medium_x = (start[0] + end[0]) / 2
         medium_y = (start[1] + end[1]) / 2
@@ -95,7 +96,7 @@ while cap.isOpened():
 
             cv2.circle(crop_img, (display_x, display_y), 5, [255, 255, 255], 20)
         
-        elif count_defects == 5 and CLICK is None:
+        elif count_defects == 3 and CLICK is None:
             CLICK = time.time()
             pyautogui.click()
             CLICK_MESSAGE = "LEFT CLICK"
@@ -108,11 +109,11 @@ while cap.isOpened():
         MOVEMENT_START = None
 
     if CLICK is not None:
-        cv2.putText(img, CLICK_MESSAGE, (50, 200), cv2.FONT_HERSHEY_SIMPLEX, 3, 3)
+        cv2.putText(img, CLICK_MESSAGE, (50, 200), cv2.FONT_HERSHEY_COMPLEX, 2, 2)
         if CLICK < time.time():
              CLICK = None
 
-    cv2.putText(img, "Defects: " + str(count_defects), (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
+    cv2.putText(img, "Defects: " + str(count_defects), (50, 50), cv2.FONT_HERSHEY_COMPLEX, 1, 1)
     cv2.imshow('Drawing', drawing)
     cv2.imshow('Gesture', img)
 
